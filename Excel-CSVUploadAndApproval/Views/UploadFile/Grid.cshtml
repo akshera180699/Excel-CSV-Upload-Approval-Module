@@ -1,0 +1,64 @@
+﻿@model Excel_CSVUploadAndApproval.Models.UploadGridData
+
+@{
+    ViewData["Title"] = "Uploaded Data";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>Uploaded Data</h2>
+            <p class="text-muted">File: @Model.FileName</p>
+        </div>
+
+        <a asp-controller="UploadFile" asp-action="Index" class="btn btn-primary"> Upload Another File </a>
+    </div>
+
+    <div id="saveMessage" class="alert d-none"></div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    @foreach (var header in Model.Headers)
+                    {
+                        <th>@header</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        @foreach (var header in Model.Headers)
+                        {
+                            <td>
+                                @if (header == "ApprovalStatus")
+                                {
+                                    var currentStatus = row.TryGetValue(header, out var status) ? status : "Not Approved";
+
+                                    <select class="form-select approval-dropdown" data-batch-id="@Model.BatchId" data-row-id="@row["Id"]">
+                                        <option value="Not Approved" selected="@(currentStatus == "Not Approved")">Not Approved</option>
+                                        <option value="Approved" selected="@(currentStatus == "Approved")">Approved</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    @(row.TryGetValue(header, out var value) ? value : "")
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <form id="antiForgeryForm">
+        @Html.AntiForgeryToken()
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/upload-grid.js" asp-append-version="true"></script>
+}

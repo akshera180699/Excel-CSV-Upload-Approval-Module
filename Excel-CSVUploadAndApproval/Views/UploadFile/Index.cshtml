@@ -1,0 +1,55 @@
+﻿@model Excel_CSVUploadAndApproval.ViewModels.UploadFileViewModel
+
+@{
+    ViewData["Title"] = "Upload File";
+}
+
+<div class="container mt-4">
+    <h2>Excel / CSV Upload</h2>
+    <p>Upload an Excel or CSV file to preview its records.</p>
+
+    <form asp-controller="UploadFile" asp-action="Index" method="post"enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label asp-for="File" class="form-label">Choose file</label>
+            <input asp-for="File" type="file" class="form-control"  accept=".xlsx,.xls,.csv" />
+            <span asp-validation-for="File" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger") mt-3">
+            @Model.Message
+        </div>
+    }
+
+    @if (Model.Headers.Count > 0)
+    {
+        <div class="table-responsive mt-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        @foreach (var header in Model.Headers)
+                        {
+                            <th>@header</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.Rows)
+                    {
+                        <tr>
+                            @foreach (var value in row)
+                            {
+                                <td>@value</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
